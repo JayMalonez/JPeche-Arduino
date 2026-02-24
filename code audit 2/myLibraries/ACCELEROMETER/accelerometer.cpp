@@ -1,5 +1,16 @@
 #include <Arduino.h>
+#include <LiquidCrystal.h>
 #include "accelerometer.h"
+
+extern LiquidCrystal lcd;
+
+int RawMinRest = 255;
+int RawMaxRest = 405;
+const int sampleSize = 10;
+
+int xRestCpt = 0;
+int yRestCpt = 0;
+int zRestCpt = 0;
 
 // Take samples and return the average
 int ReadAxis(int axisPin) {
@@ -53,12 +64,12 @@ int ReadAxis(int axisPin) {
   }
 }*/
 
-void getMove()
+void get_move(int X_AXIS, int Y_AXIS, int Z_AXIS)
 {
 
-  int xRaw = ReadAxis(X_AXIS_PIN);
-  int yRaw = ReadAxis(Y_AXIS_PIN);
-  int zRaw = ReadAxis(Z_AXIS_PIN);
+  int xRaw = ReadAxis(X_AXIS);
+  int yRaw = ReadAxis(Y_AXIS);
+  int zRaw = ReadAxis(Z_AXIS);
 
   // Convert raw values to 'milli-Gs"
   long xScaled = map(xRaw, RawMinRest, RawMaxRest, -1000, 1000);
@@ -71,11 +82,13 @@ void getMove()
   {
     if (xScaled > 0)
     {      
-      lcd.print("Avant  ");
+      lcd.print("Avant   ");
+      xRestCpt = 0; 
     }
     else if (xScaled < 0)
     {
-      lcd.print("Arriere");
+      lcd.print("Arriere ");
+      xRestCpt = 0;
     }
   }
   else
@@ -83,7 +96,7 @@ void getMove()
     xRestCpt += 1;     
     if (xRestCpt > 500) 
     {
-      lcd.print("       ");
+      lcd.print("        ");
       xRestCpt = 0;
     }
   }
@@ -94,10 +107,12 @@ void getMove()
     if (yScaled > 0)
     {      
       lcd.print("Gauche");
+      yRestCpt = 0;
     }
     else if (yScaled < 0)
     {
       lcd.print("Droite");
+      yRestCpt = 0;
     }
   }
   else
@@ -115,11 +130,13 @@ void getMove()
   {
     if (zScaled > 0)
     {      
-      lcd.print("Bas ");
+      lcd.print("Bas ");      
+      zRestCpt = 0;
     }
     else if (zScaled < 0)
     {
       lcd.print("Haut");
+      zRestCpt = 0;
     }
   }
   else

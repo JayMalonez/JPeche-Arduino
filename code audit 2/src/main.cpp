@@ -4,6 +4,7 @@
 #include "incremental.h"
 #include "bouton.h"
 #include "accelerometer.h"
+#include "bargraph.h"
 
 /*---------------------------------------------------
 VARIABLES LCD
@@ -23,9 +24,9 @@ int lastValue_encoder = 9999;
 VARIABLES BOUTONS
 ---------------------------------------------------*/
 #define PIN_BOUTON1 29
-#define PIN_BOUTON2 30 //à changer
-#define PIN_BOUTON3 31
-#define PIN_BOUTON4 32
+#define PIN_BOUTON2 31 //à changer
+#define PIN_BOUTON3 33
+#define PIN_BOUTON4 35
 
 /*---------------------------------------------------
 VARIABLES ACCELEROMETER
@@ -36,15 +37,22 @@ VARIABLES ACCELEROMETER
 #define Z_AXIS_PIN A4
 
 unsigned long startTime = 0;
-int RawMinRest = 255;
-int RawMaxRest = 405;
+
 long somme = 0;
 long cptSomme = 0;
-const int sampleSize = 10;
 
-int xRestCpt = 0;
-int yRestCpt = 0;
-int zRestCpt = 0;
+/*---------------------------------------------------
+VARIABLES POTENTIOMETRES
+---------------------------------------------------*/
+#define potPin A1
+
+int lastValue_pot = 9999;
+
+/*---------------------------------------------------
+VARIABLES BARGRAPH
+---------------------------------------------------*/
+// BARGRAPH PINS --> bargraph.cpp
+int const nbDELmax = 10;
 
 /*---------------------------------------------------
 SETUP
@@ -56,7 +64,7 @@ void setup()
   lcd.begin(16, 2);
 
   // SETUP ENCODER
-  if(setup_encoder(pinA, pinB) == -1)
+  if(setup_encoder(ENCODER_PIN_A, ENCODER_PIN_B) == -1)
   {
     lcd.print("Erreur ENCOD!");
     while(1); // stop
@@ -70,6 +78,10 @@ void setup()
 
   // SETUP ACCELEROMETER
   startTime = millis();
+
+  // SETUP BARGRAPH
+  setup_bargraph(nbDELmax);
+
 }
 
 /*---------------------------------------------------
@@ -82,11 +94,10 @@ void loop()
 
   if(value_encoder != lastValue_encoder)
   {
-    lcd.print("Encodeur")
-    lcd.setCursor(0,1);
-    lcd.print("                ");  // Clear
-    lcd.setCursor(0,1);
-    lcd.print(value);
+    lcd.setCursor(0,0);
+    lcd.print("Encodeur        ");
+    lcd.setCursor(12,0);
+    lcd.print(value_encoder);
     lastValue_encoder = value_encoder;
   }
 
@@ -96,12 +107,10 @@ void loop()
   int value_bouton4 = read_bouton(PIN_BOUTON4);
 
   // LOOP BOUTONS
-  if(value_bouton1 == LOW || value_bouton2 == LOW || value_bouton3 == LOW || value_bouton4 == LOW)
+  if((value_bouton1 == LOW || value_bouton2 == LOW || value_bouton3 == LOW || value_bouton4 == LOW) && value_encoder <= 100)
   {
     lcd.setCursor(0,0);
     lcd.print("Bouton(s) ON   ");
-    lcd.setCursor(0,1);
-    lcd.print("                ");  // Clear line 2
 
     if(value_bouton1 == LOW){
       lcd.setCursor(0,1);
@@ -135,11 +144,32 @@ void loop()
       lcd.print(" ");
     }
   }
-  else
+  else if(value_encoder <= 100)
   {
-    lcd.setCursor(0,0);
-    lcd.print("                ");  // Clear line 1
     lcd.setCursor(0,1);
-    lcd.print("                ");  // Clear line 2
+    lcd.print("                ");  // Clear
   }
+
+  // LOOP ACCELEROMETER
+  if(value_encoder > 100 && value_encoder <= 200){
+    get_move(X_AXIS_PIN, Y_AXIS_PIN, Z_AXIS_PIN);
+  }
+
+  // LOOP POTENTIOMETRE
+  int value_pot = analogRead(potPin);  // Read potentiometer
+
+  if(value_encoder > 200 && value_pot != lastValue_pot && (value_pot < lastValue_pot-5 || value_pot > lastValue_pot+5)){
+    lcd.setCursor(0,0);
+    lcd.print("Potentiometre   ");
+
+    lcd.setCursor(0,1);
+    lcd.print("                ");  // Clear
+    lcd.setCursor(0, 1);
+    lcd.print(value_pot);   // Print new value
+    lastValue_pot = value_pot;
+  }
+
+  // LOOP BARGRAPH
+  int niveau = map(value_pot, 0, 1023, 0, nbDELmax);
+  updateBargraph(nbDELmax, niveau);
 }
