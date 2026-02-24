@@ -12,6 +12,9 @@ int xRestCpt = 0;
 int yRestCpt = 0;
 int zRestCpt = 0;
 
+int largestModule = 0;
+int largestModuleRest = 0;
+
 // Take samples and return the average
 int ReadAxis(int axisPin) {
   long reading = 0;
@@ -76,6 +79,26 @@ void get_move(int X_AXIS, int Y_AXIS, int Z_AXIS)
   long yScaled = map(yRaw, RawMinRest, RawMaxRest, -1000, 1000);
   long zScaled = map(zRaw, RawMinRest, RawMaxRest, -1000, 1000) - 1000;
 
+  int moduleMove = sq((pow(xScaled/1000, 2) + pow(yScaled/1000, 2) + pow(zScaled/1000, 2)));
+  
+  if (moduleMove > largestModule + 1)
+  {
+    largestModule = moduleMove;
+    lcd.setCursor(10,1);
+    lcd.print("      ");
+    lcd.setCursor(10,1);
+    lcd.print(moduleMove);
+  }
+  else if (largestModuleRest > 500)
+  {
+    largestModuleRest = 0;
+    largestModule = 0;
+    lcd.setCursor(10,1);
+    lcd.print("      ");
+  }
+  else
+    largestModuleRest += 1;
+  
 
   lcd.setCursor(0,0);
   if (abs(xScaled) > 300)
@@ -148,4 +171,7 @@ void get_move(int X_AXIS, int Y_AXIS, int Z_AXIS)
       zRestCpt = 0;
     }
   }
+
+
+
 }
