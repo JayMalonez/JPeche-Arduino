@@ -16,17 +16,17 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 VARIABLES ENCODER
 ---------------------------------------------------*/
 #define ENCODER_PIN_A 19   // doit être une pin interruption
-#define ENCODER_PIN_B 27
+#define ENCODER_PIN_B 29
 
 int lastValue_encoder = 9999;
 
 /*---------------------------------------------------
 VARIABLES BOUTONS
 ---------------------------------------------------*/
-#define PIN_BOUTON1 29
-#define PIN_BOUTON2 31 //à changer
-#define PIN_BOUTON3 33
-#define PIN_BOUTON4 35
+#define PIN_BOUTON1 39
+#define PIN_BOUTON2 37 //à changer
+#define PIN_BOUTON3 35
+#define PIN_BOUTON4 33
 
 /*---------------------------------------------------
 VARIABLES ACCELEROMETER

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "bargraph.h"
 
-int const bargraphPins[] = {23, 25, 28, 24, 22, 17, 16, 15, 14, 2};
+int const bargraphPins[] = {25, 23, 26, 24, 22, 17, 16, 15, 14, 2};
 
 void setup_bargraph(int nbDELmax){
     for (int i = 0; i < nbDELmax; i++) {
