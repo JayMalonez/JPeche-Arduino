@@ -51,15 +51,17 @@ int main()
     SetCommTimeouts(hSerial, &timeouts);
 
     json j_msg_send, j_msg_rcv;
-    j_msg_send["led"] = 0;
+    j_msg_send["LED"] = 0;
 
     while(true)
     {
         try {
-            if (j_msg_send["led"] == 0)
-                j_msg_send["led"] = 1;
+            if (j_msg_send["LED"] == 0)
+                j_msg_send["LED"] = 1;
             else
-                j_msg_send["led"] = 0;
+                j_msg_send["LED"] = 0;
+            
+            j_msg_send["BARGRAPH"] = 5;
 
             // Send data
             string tempString = j_msg_send.dump();

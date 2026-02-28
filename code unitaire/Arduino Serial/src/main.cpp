@@ -2,6 +2,7 @@
  * Auteurs: Jean-Samuel Lauzon    
  * Date: Fevrier 2022
  * Modif : Janvier 2025, 115200 BAUDS, JpGouin
+ * 
 */
 
 /*------------------------------ Librairies ---------------------------------*/
@@ -20,7 +21,7 @@ volatile bool shouldRead_ = false;  // Drapeau prêt à lire un message
 bool ledState = 0;
 int potValue = 0;
 
-int pinLED = 8;
+int pinLED = LED_BUILTIN;
 int pinPOT = A0;
 
 
