@@ -61,7 +61,7 @@ int const nbDELmax = 10;
 /*---------------------------------------------------
 VARIABLES LED
 ---------------------------------------------------*/
-#define LED_PIN LED_BUILTIN //??? 
+#define LED_PIN 30 //??? 
 
 /*---------------------------------------------------
 SETUP
@@ -89,7 +89,7 @@ void setup()
   // SETUP BARGRAPH
   setup_bargraph(nbDELmax);
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 
 }
 
