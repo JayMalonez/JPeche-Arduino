@@ -1,2 +1,3 @@
-arduino-libraries/LiquidCrystal@^1.0.7
+paulstoffregen/TimerOne@^1.2
 ArduinoJson
+arduino-libraries/LiquidCrystal@^1.0.7

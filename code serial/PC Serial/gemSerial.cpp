@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include "include/json.hpp"
 
 using json = nlohmann::json;
@@ -124,19 +125,21 @@ int main() {
     while (true) {
         // Envoi
         if (mySerial.writeMSG(message)) {
-            cout << "Message envoye !" << endl;
+            //cout << "Message envoye !" << endl;
         }
 
         // Lecture
         json response = mySerial.readMSG();
         if (!response.empty()) {
-            cout << "Recu : " << response.dump(4) << endl;
+
+            cout << response["Muon"] << endl;
         }
+        
 
         // Logique alternance pour le test
         message["LED"] = (message["LED"] == 0) ? 1 : 0;
 
-        Sleep(1000);
+        Sleep(10);
     }
 
     return 0;

@@ -61,7 +61,13 @@ int const nbDELmax = 10;
 /*---------------------------------------------------
 VARIABLES LED
 ---------------------------------------------------*/
-#define LED_PIN 30 //??? 
+#define LED_PIN 30 
+
+/*---------------------------------------------------
+MUON
+---------------------------------------------------*/
+#define SUB_RESET_PIN 5
+#define SUB_READ_PIN 6
 
 /*---------------------------------------------------
 SETUP
@@ -88,8 +94,12 @@ void setup()
 
   // SETUP BARGRAPH
   setup_bargraph(nbDELmax);
-
+  //SETUP DEL
   pinMode(LED_PIN, OUTPUT);
+
+  //Muon com
+  pinMode(SUB_READ_PIN, INPUT);
+  pinMode(SUB_RESET_PIN, OUTPUT);
 
 }
 
@@ -111,8 +121,9 @@ FONCTION
 ---------------------------------------------------*/
 void serialEvent() { shouldRead_ = true; }
 
-void sendMsg()
-{
+void sendMsg(){
+
+  //Exemple de JSON : {"ENCODER":-627,"BTN_1":0,"BTN_2":0,"BTN_3":0,"BTN_4":0,"X_mG":-307,"Y_mG":-734,"Z_mG":-1800,"pot_X":259,"pot_Y":257}
   StaticJsonDocument<500> dataJSON;
 
   // LOOP ENCODER
@@ -123,7 +134,6 @@ void sendMsg()
   dataJSON["BTN_2"] = read_bouton(PIN_BOUTON2);
   dataJSON["BTN_3"] = read_bouton(PIN_BOUTON3);
   dataJSON["BTN_4"] = read_bouton(PIN_BOUTON4);
-
 
   // LOOP ACCELEROMETER
   int xRaw = ReadAxis(X_AXIS_PIN);
@@ -139,6 +149,14 @@ void sendMsg()
   dataJSON["pot_X"] = analogRead(X_potPin);  // Read potentiometer
   dataJSON["pot_Y"] = analogRead(Y_potPin);  // Read potentiometer
 
+
+  dataJSON["Muon"] = digitalRead(SUB_READ_PIN);
+  digitalWrite(SUB_RESET_PIN, HIGH);
+  delayMicroseconds(100);
+  digitalWrite(SUB_RESET_PIN, LOW);
+  dataJSON["time"] = millis();
+
+
   // Serialisation
   serializeJson(dataJSON, Serial);
 
@@ -146,11 +164,11 @@ void sendMsg()
   Serial.println();
   shouldSend_ = false;
 
+
 }
 
 void readMsg(){
   // Lecture du message Json
-  //Exemple de JSON : {"ENCODER":-627,"BTN_1":0,"BTN_2":0,"BTN_3":0,"BTN_4":0,"X_mG":-307,"Y_mG":-734,"Z_mG":-1800,"pot_X":259,"pot_Y":257}
   StaticJsonDocument<500> dataJSON;
   JsonVariant parse_msg;
 
@@ -166,13 +184,24 @@ void readMsg(){
   }
   
   // Analyse des éléments du message message
-  parse_msg = dataJSON["BARGRAPH"];
   if (!parse_msg.isNull()) 
-    updateBargraph(nbDELmax, parse_msg.as<int>());
+    updateBargraph(nbDELmax, dataJSON["BARGRAPH"].as<int>());
 
     // Analyse des éléments du message message
-  parse_msg = dataJSON["LED"];
   if (!parse_msg.isNull()) 
       digitalWrite(LED_PIN,dataJSON["LED"].as<bool>());
 
 }
+
+/*void readMuon(){
+  int static timerMuon = 0;
+  int muonCheck = analogRead(A0);
+
+  if (muonCheck < 620 && cycleMuon > 10) {
+    muonDetected = true;
+    cycleMuon = 0;
+  } 
+  else
+    cycleMuon += 1;
+
+}*/

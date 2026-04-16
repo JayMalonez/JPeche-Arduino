@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "include/json.hpp"
 using json = nlohmann::json;
@@ -77,11 +78,13 @@ int main()
             DWORD bytesRead;
             ReadFile(hSerial, buffer, sizeof(buffer) - 1, &bytesRead, NULL);
 
-            if (bytesRead > 0)
+            
+
+            /*if (bytesRead > 0)
             {
                 buffer[bytesRead] = '\0';
                 std::cout << "Received: " << buffer << std::endl;
-            }
+            }*/
 
             Sleep(1000);
         }
@@ -93,4 +96,15 @@ int main()
 
     CloseHandle(hSerial);
     return 0;
+}
+
+
+void logMuon(bool muon, long time)
+{
+
+  ofstream muonCSV;
+  muonCSV.open ("example.txt");
+  muonCSV << time << ";" << muon << "\n";
+  muonCSV.close();
+
 }
